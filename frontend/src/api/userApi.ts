@@ -12,43 +12,43 @@ interface CreateUserRequest {
   email: string;
 }
 
-interface UpdateMyUserRequest {
+interface UpdateUserRequest {
   name: string;
   addressLine1: string;
   city: string;
   country: string;
 }
 
-const useGetMyUser = () => {
+const useGetUser = () => {
   const { getAccessTokenSilently } = useAuth0();
 
-  const getMyUserRequest = async (): Promise<User> => {
+  const getUserRequest = async (): Promise<User> => {
     const accessToken = await getAccessTokenSilently();
-    const { data } = await axios.get(`${API_BASE_URL}/api/my/user`, {
+    const { data } = await axios.get(`${API_BASE_URL}/api/users/me`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return data;
   };
 
   const {
-    data: currentUser,
+    data: user,
     isLoading,
     error,
-  } = useQuery("fetchCurrentUser", getMyUserRequest);
+  } = useQuery("fetchUser", getUserRequest);
 
   if (error) {
     toast.error(error.toString());
   }
 
-  return { currentUser, isLoading };
+  return { user, isLoading };
 };
 
-const useCreateMyUser = () => {
+const useCreateUser = () => {
   const { getAccessTokenSilently } = useAuth0();
 
-  const createMyUserRequest = async (user: CreateUserRequest) => {
+  const createUserRequest = async (user: CreateUserRequest) => {
     const accessToken = await getAccessTokenSilently();
-    const { data } = await axios.post(`${API_BASE_URL}/api/my/user`, user, {
+    const { data } = await axios.post(`${API_BASE_URL}/api/users`, user, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -60,17 +60,17 @@ const useCreateMyUser = () => {
     isLoading,
     isError,
     isSuccess,
-  } = useMutation(createMyUserRequest);
+  } = useMutation(createUserRequest);
 
   return { createUser, isLoading, isError, isSuccess };
 };
 
-const useUpdateMyUser = () => {
+const useUpdateUser = () => {
   const { getAccessTokenSilently } = useAuth0();
 
-  const updateMyUserRequest = async (formData: UpdateMyUserRequest) => {
+  const updateUserRequest = async (formData: UpdateUserRequest) => {
     const accessToken = await getAccessTokenSilently();
-    const { data } = await axios.put(`${API_BASE_URL}/api/my/user`, formData, {
+    const { data } = await axios.put(`${API_BASE_URL}/api/users`, formData, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return data;
@@ -82,7 +82,7 @@ const useUpdateMyUser = () => {
     isSuccess,
     error,
     reset,
-  } = useMutation(updateMyUserRequest);
+  } = useMutation(updateUserRequest);
 
   if (isSuccess) {
     toast.success("User profile updated!");
@@ -96,4 +96,4 @@ const useUpdateMyUser = () => {
   return { updateUser, isLoading };
 };
 
-export { useGetMyUser, useCreateMyUser, useUpdateMyUser };
+export { useGetUser, useCreateUser, useUpdateUser };

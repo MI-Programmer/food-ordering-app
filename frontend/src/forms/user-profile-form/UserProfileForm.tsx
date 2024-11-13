@@ -18,10 +18,10 @@ import { User } from "@/types";
 
 const formSchema = z.object({
   email: z.string().optional(),
-  name: z.string().min(1, "Name is required"),
-  addressLine1: z.string().min(1, "Address Line 1 is required"),
-  city: z.string().min(1, "City is required"),
-  country: z.string().min(1, "Country is required"),
+  name: z.string().min(1, "Name is required."),
+  addressLine1: z.string().min(1, "Address Line 1 is required."),
+  city: z.string().min(1, "City is required."),
+  country: z.string().min(1, "Country is required."),
 });
 
 type UserFormData = z.infer<typeof formSchema>;
@@ -42,7 +42,7 @@ const UserProfileForm = ({ currentUser, onSave, isLoading }: Props) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSave)}
-        className="space-y-4 rounded-lg bg-gray-50 md:p-10"
+        className="space-y-4 rounded-lg bg-gray-50 px-3 py-2 md:p-10"
       >
         <div>
           <h2 className="text-2xl font-bold">User Profile Form</h2>

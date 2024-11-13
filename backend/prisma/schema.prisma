@@ -8,11 +8,27 @@ datasource db {
 }
 
 model User {
-  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
   auth0Id      String
   email        String
   name         String?
   addressLine1 String?
   city         String?
   country      String?
+  Restaurants  Restaurant[]
+}
+
+model Restaurant {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                String   @db.ObjectId
+  name                  String
+  city                  String
+  country               String
+  deliveryPrice         Float
+  estimatedDeliveryTime Int
+  cuisines              String[]
+  menuItems             Json
+  imageUrl              String
+  lastUpdated           DateTime @updatedAt
 }

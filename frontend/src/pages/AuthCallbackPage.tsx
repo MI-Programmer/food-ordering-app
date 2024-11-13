@@ -2,12 +2,13 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
-import { useCreateMyUser } from "@/api/MyUserApi";
+import { useCreateUser } from "@/api/userApi";
+import Loading from "@/components/Loading";
 
 function AuthCallbackPage() {
   const navigate = useNavigate();
   const { user } = useAuth0();
-  const { createUser } = useCreateMyUser();
+  const { createUser } = useCreateUser();
 
   const hasCreatedUser = useRef(false);
 
@@ -20,7 +21,7 @@ function AuthCallbackPage() {
     navigate("/");
   }, [user, createUser, hasCreatedUser, navigate]);
 
-  return <>Loading...</>;
+  return <Loading />;
 }
 
 export default AuthCallbackPage;

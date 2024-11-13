@@ -2,11 +2,7 @@ import { Request, Response } from "express";
 import { describe, expect, it, vi } from "vitest";
 
 import prisma from "../../lib/prisma";
-import {
-  getCurrentUser,
-  createCurrentUser,
-  updateCurrentUser,
-} from "../myUserController";
+import { getUser, createUser, updateUser } from "../userController";
 
 const mockResponse = () => {
   const res = {} as Response;
@@ -15,15 +11,15 @@ const mockResponse = () => {
   return res;
 };
 
-describe("MyUserController", () => {
-  describe("getCurrentUser", () => {
+describe("UserController", () => {
+  describe("getUser", () => {
     it("should throw an error when user is not found", async () => {
       const req = { userId: 1 } as unknown as Request;
       const res = {} as Response;
       prisma.user.findUnique = vi.fn().mockResolvedValue(null);
 
       try {
-        await getCurrentUser(req, res);
+        await getUser(req, res);
       } catch (error: any) {
         expect(error.clientMessage).toBe("User not found.");
         expect(error.status).toBe(404);
@@ -36,33 +32,28 @@ describe("MyUserController", () => {
       const user = { id: 1, name: "test", email: "test@example.com" };
       prisma.user.findUnique = vi.fn().mockResolvedValue(user);
 
-      await getCurrentUser(req, res);
+      await getUser(req, res);
 
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(user);
     });
   });
 
-  describe("createCurrentUser", () => {
-    it("should throw an error when user is exist", async () => {
+  describe("createUser", () => {
+    it("should respond with status when user is exist", async () => {
       const req = {
         body: {
           auth0Id: "google-oauth2|109333",
           email: "test@example.com",
         },
       } as unknown as Request;
-      const res = {} as Response;
+      const res = mockResponse();
       const user = { id: 1, name: "test", email: "test@example.com" };
       prisma.user.findFirst = vi.fn().mockResolvedValue(user);
 
-      try {
-        await createCurrentUser(req, res);
-      } catch (error: any) {
-        expect(error.clientMessage).toBe(
-          `Email "${user.email}" is already exist. Please use a different email.`
-        );
-        expect(error.status).toBe(409);
-      }
+      await createUser(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(200);
     });
 
     it("should respond with new user data and status when a user is created", async () => {
@@ -82,20 +73,20 @@ describe("MyUserController", () => {
       prisma.user.findFirst = vi.fn().mockResolvedValue(null);
       prisma.user.create = vi.fn().mockResolvedValue(user);
 
-      await createCurrentUser(req, res);
+      await createUser(req, res);
 
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith(user);
     });
   });
 
-  describe("updateCurrentUser", () => {
+  describe("updateUser", () => {
     it("should throw an error when the request body validation fails", async () => {
       const req = { body: {} } as unknown as Request;
       const res = {} as Response;
 
       try {
-        await updateCurrentUser(req, res);
+        await updateUser(req, res);
       } catch (error: any) {
         expect(error.clientMessage).toBe("Validations failed.");
         expect(error.status).toBe(400);
@@ -117,7 +108,7 @@ describe("MyUserController", () => {
       prisma.user.findUnique = vi.fn().mockResolvedValue(null);
 
       try {
-        await updateCurrentUser(req, res);
+        await updateUser(req, res);
       } catch (error: any) {
         expect(error.clientMessage).toBe("User not found.");
         expect(error.status).toBe(404);
@@ -146,7 +137,7 @@ describe("MyUserController", () => {
         .fn()
         .mockImplementation(async ({ data }) => ({ ...data, ...user }));
 
-      await updateCurrentUser(req, res);
+      await updateUser(req, res);
 
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({ ...req.body, ...user });

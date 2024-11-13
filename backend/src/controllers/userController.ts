@@ -2,10 +2,10 @@ import { Request, Response } from "express";
 import { ZodError } from "zod";
 
 import prisma from "../lib/prisma";
-import { validateMyUserRequest } from "../lib/zod";
+import { validateUserRequest } from "../lib/zod";
 import { throwApiError } from "../utils";
 
-const getCurrentUser = async (req: Request, res: Response) => {
+const getUser = async (req: Request, res: Response) => {
   const user = await prisma.user.findUnique({ where: { id: req.userId } });
 
   if (!user) {
@@ -15,15 +15,13 @@ const getCurrentUser = async (req: Request, res: Response) => {
   res.status(200).json(user);
 };
 
-const createCurrentUser = async (req: Request, res: Response) => {
+const createUser = async (req: Request, res: Response) => {
   const { auth0Id, email } = req.body;
   const existingUser = await prisma.user.findFirst({ where: { auth0Id } });
 
   if (existingUser) {
-    throwApiError({
-      message: `Email "${email}" is already exist. Please use a different email.`,
-      status: 409,
-    });
+    res.status(200);
+    return;
   }
 
   const newUser = await prisma.user.create({ data: { auth0Id, email } });
@@ -31,16 +29,9 @@ const createCurrentUser = async (req: Request, res: Response) => {
   res.status(201).json(newUser);
 };
 
-const updateCurrentUser = async (req: Request, res: Response) => {
-  const { name, addressLine1, country, city } = req.body;
-
+const updateUser = async (req: Request, res: Response) => {
   try {
-    await validateMyUserRequest.parseAsync({
-      name,
-      addressLine1,
-      country,
-      city,
-    });
+    req.body = await validateUserRequest.parseAsync(req.body);
   } catch (errors) {
     const details = errors instanceof ZodError ? { details: errors } : {};
     throwApiError({
@@ -59,10 +50,10 @@ const updateCurrentUser = async (req: Request, res: Response) => {
 
   const updatedUser = await prisma.user.update({
     where: { id: req.userId },
-    data: { name, addressLine1, country, city },
+    data: { ...req.body },
   });
 
   res.status(200).json(updatedUser);
 };
 
-export { createCurrentUser, updateCurrentUser, getCurrentUser };
+export { createUser, updateUser, getUser };

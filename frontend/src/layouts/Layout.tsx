@@ -14,7 +14,7 @@ function Layout({ children, showHero = false }: Props) {
     <div className="flex min-h-screen flex-col">
       <Header />
       {showHero && <Hero />}
-      <div className="container mx-auto flex-1 py-10">{children}</div>
+      <div className="container mx-auto flex-1 px-2 py-10">{children}</div>
       <Footer />
     </div>
   );

@@ -1,8 +1,9 @@
-import express, { NextFunction, Request, Response } from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import morgan from "morgan";
 
-import myUserRoutes from "./routes/myUserRoutes";
+import userRoutes from "./routes/userRoutes";
+import restaurantRoutes from "./routes/restaurantRoutes";
 import { handleError } from "./controllers/errorController";
 
 const app = express();
@@ -10,7 +11,8 @@ app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
 
-app.use("/api/my/user", myUserRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/restaurants", restaurantRoutes);
 
 app.use(handleError);
 

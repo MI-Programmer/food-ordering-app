@@ -4,7 +4,9 @@
   "main": "./src/index.ts",
   "scripts": {
     "test": "vitest",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "build": "rimraf dist && npx tsc",
+    "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -12,12 +14,16 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^5.21.1",
+    "@types/multer": "^1.4.12",
+    "cloudinary": "^2.5.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-oauth2-jwt-bearer": "^1.6.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "rimraf": "^6.0.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {
